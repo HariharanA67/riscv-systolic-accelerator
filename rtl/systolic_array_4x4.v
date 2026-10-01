@@ -14,12 +14,31 @@ module systolic_array_4x4 (
     generate
         for (i = 0; i < 4; i = i + 1) begin : row
             for (j = 0; j < 4; j = j + 1) begin : col
+                wire signed [7:0] a_sel;
+                wire signed [7:0] b_sel;
+                wire signed [31:0] acc_sel;
+                
+                if (i == 0) 
+                    assign a_sel = a_in_flat[j];
+                else 
+                    assign a_sel = a_fwd[i-1][j];
+                
+                if (j == 0)
+                    assign b_sel = b_in_flat[i*4];
+                else
+                    assign b_sel = b_fwd[i][j-1];
+                
+                if (i == 0)
+                    assign acc_sel = 32'b0;
+                else
+                    assign acc_sel = acc_fwd[i-1][j];
+                
                 processing_element pe (
                     .clk(clk),
                     .rst(rst),
-                    .a_in(i == 0 ? a_in_flat[j] : a_fwd[i-1][j]),
-                    .b_in(j == 0 ? b_in_flat[i*4] : b_fwd[i][j-1]),
-                    .acc_in((i == 0) ? 32'b0 : acc_fwd[i-1][j]),
+                    .a_in(a_sel),
+                    .b_in(b_sel),
+                    .acc_in(acc_sel),
                     .a_out(a_fwd[i][j]),
                     .b_out(b_fwd[i][j]),
                     .acc_out(acc_fwd[i][j])
