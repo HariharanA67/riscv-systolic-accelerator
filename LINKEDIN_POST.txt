@@ -1,0 +1,21 @@
+🔧 Built a Custom RISC-V Systolic Array Accelerator SoC from scratch!
+
+After 2 weeks of RTL design, simulation & debugging, I've successfully created a hardware accelerator for 4×4 INT8 matrix multiplication integrated with a PicoRV32 RISC-V core.
+
+✅ What's working:
+- 4×4 systolic array pipeline (verified with testbench)
+- RISC-V toolchain (gcc 16.1.0) compiling firmware
+- SoC top-level with integrated CPU + RAM
+- Full open-source toolchain (Yosys, nextpnr, Icarus Verilog)
+
+⏳ Next:
+- Debug PicoRV32 memory interface
+- Full-system simulation with real matmul firmware
+- Synthesis for ULX3S ECP5 FPGA
+- PCB design for breakout board
+
+This project is about learning real chip design — not just simulation, but actual synthesis & hardware. Every line of Verilog, every pipeline stage, every memory access is deliberate.
+
+Code: https://github.com/HariharanA67/riscv-systolic-accelerator
+
+#VLSI #HardwareAccelerator #RISCV #Verilog #OpenSource #EmbeddedSystems #ChipDesign #FPGA
