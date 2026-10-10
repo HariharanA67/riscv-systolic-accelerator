@@ -18,16 +18,19 @@ module systolic_array_4x4 (
                 wire signed [7:0] b_sel;
                 wire signed [31:0] acc_sel;
                 
+                // A input: row i, col j
                 if (i == 0) 
-                    assign a_sel = a_in_flat[j];
+                    assign a_sel = a_in_flat[i*4 + j];
                 else 
                     assign a_sel = a_fwd[i-1][j];
                 
+                // B input: row i, col j
                 if (j == 0)
-                    assign b_sel = b_in_flat[i*4];
+                    assign b_sel = b_in_flat[i*4 + j];
                 else
                     assign b_sel = b_fwd[i][j-1];
                 
+                // Accumulator: from top
                 if (i == 0)
                     assign acc_sel = 32'b0;
                 else
