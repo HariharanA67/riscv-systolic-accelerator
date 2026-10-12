@@ -19,3 +19,7 @@ sim/tb_probe.v
 sim/tb_soc
 sim/tb_systolic
 sim/tb_systolic_ref.v
+sim/*.out
+sim/tb_nr
+sim/tb_osf
+sim/tb_top
