@@ -10,3 +10,8 @@ sim/tb_fix
 sim/tb_simple
 sim/tb_minimal
 sim/tb_min
+sim/tb_os
+sim/tb_os2
+sim/tb_probe
+sim/tb_sys
+sim/tb_wb
