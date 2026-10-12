@@ -1,12 +1,13 @@
-// Memory-mapped wrapper for systolic_os_4x4. See register map in README/sim notes.
+// Memory-mapped wrapper for systolic_os_4x4.
 module accel_mmio (
-    input  wire        clk,
-    input  wire        rst,
-    input  wire        req,      // bus request this cycle (valid & not yet ready)
-    input  wire        we,       // write request
-    input  wire [11:0] addr,
-    input  wire [31:0] wdata,
-    output wire [31:0] rdata
+    input  wire         clk,
+    input  wire         rst,
+    input  wire         req,
+    input  wire         we,
+    input  wire [11:0]  addr,
+    input  wire [31:0]  wdata,
+    output wire [31:0]  rdata,
+    output wire [511:0] c_out
 );
     reg [127:0] a_vec, b_vec;
     reg         busy, done, clr;
@@ -58,4 +59,5 @@ module accel_mmio (
     assign rdata = (addr == 12'h004) ? {30'd0, busy, done} :
                    (addr[11:8] == 4'h3 && addr[7:6] == 2'b00) ? c_flat[k*32 +: 32] :
                    32'd0;
+    assign c_out = c_flat;
 endmodule

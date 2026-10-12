@@ -1,8 +1,8 @@
 // PicoRV32 + 4 KB RAM at 0x0000_0000 + accelerator at 0x8000_0000.
-// Memory handshake matches the testbench model that passed Steps A and B.
 module soc_mini (
-    input wire clk,
-    input wire rst
+    input  wire         clk,
+    input  wire         rst,
+    output wire [511:0] c_out
 );
     wire        mem_valid, mem_instr;
     reg         mem_ready;
@@ -18,7 +18,8 @@ module soc_mini (
     accel_mmio acc (
         .clk(clk), .rst(rst),
         .req(req & sel_acc), .we(|mem_wstrb),
-        .addr(mem_addr[11:0]), .wdata(mem_wdata), .rdata(acc_rdata)
+        .addr(mem_addr[11:0]), .wdata(mem_wdata), .rdata(acc_rdata),
+        .c_out(c_out)
     );
 
     always @(posedge clk) begin
