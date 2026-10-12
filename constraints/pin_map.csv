@@ -1,0 +1,8 @@
+Signal,FPGA site,Board label,Bank,IO standard,Direction,Notes
+clk,G2,CLK_25MHz,6,LVCMOS33,input,25 MHz oscillator
+rst,B11,GP0,0,LVCMOS33,input,Plain GPIO; no other net shown
+start,A10,GP1,0,LVCMOS33,input,Plain GPIO
+shift_en,C11,GN0,0,LVCMOS33,input,Plain GPIO
+din,A11,GN1,0,LVCMOS33,input,Plain GPIO
+dout,A9,GP2,0,LVCMOS33,output,Plain GPIO
+done,B10,GN2,0,LVCMOS33,output,Plain GPIO
