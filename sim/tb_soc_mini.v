@@ -13,7 +13,7 @@ module tb_soc_mini;
 
     // Count consecutive instruction fetches from the final loop address
     always @(posedge clk) begin
-        if (!rst && dut.mem_valid && dut.mem_instr && dut.mem_addr == FINAL_LOOP && !dut.mem_ready)
+        if (!rst && dut.mem_valid && dut.mem_instr && dut.mem_addr == FINAL_LOOP && dut.mem_rdata == 32'h0000006f && !dut.mem_ready)
             loop_hits <= loop_hits + 1;
         else if (!rst && dut.mem_valid && dut.mem_instr && !dut.mem_ready)
             loop_hits <= 0;
