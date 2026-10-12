@@ -1,0 +1,17 @@
+# Pins from ulx3s doc/constraints/ulx3s_v20.lpf (ULX3S v2.x / v3.x)
+LOCATE COMP "clk" SITE "G2";
+IOBUF  PORT "clk" PULLMODE=NONE IO_TYPE=LVCMOS33;
+FREQUENCY PORT "clk" 25 MHZ;
+
+LOCATE COMP "rst"       SITE "B11";   # gp[0]
+LOCATE COMP "start"     SITE "A10";   # gp[1]
+LOCATE COMP "shift_en"  SITE "C11";   # gn[0]
+LOCATE COMP "din"       SITE "A11";   # gn[1]
+LOCATE COMP "dout"      SITE "A9";    # gp[2]
+LOCATE COMP "done"      SITE "B10";   # gn[2]
+IOBUF  PORT "rst"       PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "start"     PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "shift_en"  PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "din"       PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "dout"      PULLMODE=NONE IO_TYPE=LVCMOS33;
+IOBUF  PORT "done"      PULLMODE=NONE IO_TYPE=LVCMOS33;
