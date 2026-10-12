@@ -1,0 +1,12 @@
+build/
+sim/tb_mm
+sim/tb_wb
+sim/tb_fw
+sim/tb_accel
+sim/tb_bench
+sim/tb_id
+sim/tb_debug
+sim/tb_fix
+sim/tb_simple
+sim/tb_minimal
+sim/tb_min

@@ -1,30 +1,34 @@
-// Simple 4x4 matmul: C = A × B
+// 4x4 INT8 matrix multiply: C = A x B
+// Inputs/outputs are flattened row-major.
+// A[r][k] = a_in[(r*4+k)*8 +: 8], C[r][c] = c_out[(r*4+c)*32 +: 32]
+// Result is registered: it appears one clock after the inputs.
 module matmul_simple (
-    input clk,
-    input rst,
-    input signed [7:0] a [15:0],   // A matrix (flattened)
-    input signed [7:0] b [15:0],   // B matrix (flattened)
-    output reg signed [31:0] c [15:0]  // C matrix (flattened)
+    input  wire               clk,
+    input  wire               rst,
+    input  wire signed [127:0] a_in,
+    input  wire signed [127:0] b_in,
+    output reg  signed [511:0] c_out
 );
-
-    integer i, j, k;
-    reg signed [31:0] sum;
-    
     always @(posedge clk) begin
         if (rst) begin
-            for (i = 0; i < 16; i = i + 1)
-                c[i] <= 0;
-        end else begin
-            // Compute all C elements in parallel
-            for (i = 0; i < 4; i = i + 1) begin
-                for (j = 0; j < 4; j = j + 1) begin
-                    sum = 0;
+            c_out <= 512'd0;
+        end else begin : compute
+            integer r, c, k;
+            reg signed [31:0] acc;
+            reg signed [15:0] p;
+            reg signed [511:0] tmp;
+            tmp = 512'd0;
+            for (r = 0; r < 4; r = r + 1) begin
+                for (c = 0; c < 4; c = c + 1) begin
+                    acc = 32'sd0;
                     for (k = 0; k < 4; k = k + 1) begin
-                        sum = sum + (a[i*4 + k] * b[k*4 + j]);
+                        p   = $signed(a_in[(r*4+k)*8 +: 8]) * $signed(b_in[(k*4+c)*8 +: 8]);
+                        acc = acc + p;
                     end
-                    c[i*4 + j] <= sum;
+                    tmp[(r*4+c)*32 +: 32] = acc;
                 end
             end
+            c_out <= tmp;
         end
     end
 endmodule
