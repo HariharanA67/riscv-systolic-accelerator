@@ -23,3 +23,7 @@ sim/*.out
 sim/tb_nr
 sim/tb_osf
 sim/tb_top
+sim/prog.hex
+sim/tb_cpu
+sim/tb_cpu_store
+sim/tb_socm
