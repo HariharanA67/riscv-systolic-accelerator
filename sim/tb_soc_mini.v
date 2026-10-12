@@ -10,24 +10,25 @@ module tb_soc_mini;
     localparam integer NEED_HITS  = 5;
 
     integer i, j, k, errors, cycles;
-    integer loop_hits;          // consecutive fetches of the final loop
-    integer first_loop_cycle;   // cycle when the loop was first fetched, -1 if never
+    integer loop_hits;
+    integer first_loop_cycle;
     integer c_word_writes_before_loop;
     reg signed [31:0] expected, got;
 
-    // Count consecutive fetches of "j ." at the final address
+    // Consecutive fetches of "j ." at the final address. Any other instruction
+    // fetch resets the count, so NEED_HITS hits means back-to-back loop fetches.
     always @(posedge clk) begin
         if (!rst && dut.mem_valid && dut.mem_instr && !dut.mem_ready) begin
             if (dut.mem_addr == FINAL_LOOP && dut.mem_rdata == JUMP_SELF) begin
                 loop_hits <= loop_hits + 1;
                 if (first_loop_cycle < 0) first_loop_cycle = cycles;
-            end else if (first_loop_cycle < 0) begin
+            end else begin
                 loop_hits <= 0;
             end
         end
     end
 
-    // Count writes of C-result words (RAM words 256..271) before the loop
+    // Count writes to C-result words (RAM words 256..271) before the first loop fetch
     always @(posedge clk) begin
         if (!rst && dut.mem_valid && !dut.mem_instr && !dut.mem_ready && |dut.mem_wstrb
             && dut.mem_addr[31] == 1'b0 && dut.mem_addr[11:2] >= 10'd256 && dut.mem_addr[11:2] < 10'd272
