@@ -15,3 +15,7 @@ sim/tb_os2
 sim/tb_probe
 sim/tb_sys
 sim/tb_wb
+sim/tb_probe.v
+sim/tb_soc
+sim/tb_systolic
+sim/tb_systolic_ref.v
