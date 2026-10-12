@@ -27,3 +27,9 @@ sim/prog.hex
 sim/tb_cpu
 sim/tb_cpu_store
 sim/tb_socm
+firmware/*.bin
+firmware/*.elf
+sim/prog_c.hex
+sim/prog_sw.hex
+sim/tb_socc
+sim/tb_socsw
