@@ -11,7 +11,7 @@ module tb_soc_mini;
         errors = 0;
         $readmemh("prog.hex", dut.ram);
         #22 rst = 0;
-        #30000;: copy, compute, copy back
+        #30000;
         for (i = 0; i < 4; i = i + 1)
             for (j = 0; j < 4; j = j + 1) begin
                 expected = 0;
