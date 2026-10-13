@@ -42,3 +42,4 @@ sim/tb_case4_check.v
 sim/tb_hang_check.v
 sim/tb_m2
 sim/tb_m3
+sim/tb_pat
