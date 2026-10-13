@@ -15,11 +15,9 @@ module tb_systolic_top_noreset;
         integer b;
         begin
             for (b = 127; b >= 0; b = b - 1) begin
-                @(negedge clk);
-                shift_en = 1; din = v[b];
+                @(negedge clk); shift_en = 1; din = v[b];
+                @(negedge clk); shift_en = 0; din = 0;
             end
-            @(negedge clk);
-            shift_en = 0; din = 0;
         end
     endtask
 
@@ -38,12 +36,11 @@ module tb_systolic_top_noreset;
             @(negedge clk); start = 0;
             wait (done == 1);
             @(negedge clk);
-            shift_en = 1;
             for (n = 511; n >= 0; n = n - 1) begin
                 C_got[n] = dout;
-                @(negedge clk);
+                @(negedge clk); shift_en = 1;
+                @(negedge clk); shift_en = 0;
             end
-            shift_en = 0;
             for (i = 0; i < 4; i = i + 1)
                 for (j = 0; j < 4; j = j + 1) begin
                     expected = 0;

@@ -1,6 +1,10 @@
-// Serial-I/O wrapper for systolic_os_4x4. Back-to-back runs without reset.
-// States: LOAD (256 bits, A then B, MSB first) -> RUN (10 feed cycles)
-//         -> READ (512 bits of C, MSB first). READ returns to LOAD when done.
+// Serial-I/O wrapper for systolic_os_4x4.
+// LOAD: accepts exactly 256 bits (A then B, each MSB first) while shift_en is high.
+//       Bits after the 256th are ignored. start is accepted only when all 256 bits are in.
+// RUN:  10 feed cycles, then C is captured. shift_en is ignored.
+// READ: one bit of C per RISING EDGE of shift_en (host must drop shift_en between bits),
+//       MSB first. A held-over shift_en cannot shift the result.
+//       After 512 bits, the wrapper returns to LOAD.
 module systolic_top (
     input  wire clk,
     input  wire rst,
@@ -15,12 +19,14 @@ module systolic_top (
     reg [1:0]   state;
     reg [127:0] a_sr, b_sr;
     reg [511:0] c_sr;
-    reg [8:0]   cnt;        // bit counter within the current phase
+    reg [8:0]   cnt;
     reg [3:0]   feed_cnt;
     reg         clr;
+    reg         loaded;
+    reg         se_prev;     // previous shift_en, for rising-edge detection
+    wire        se_rise = shift_en & ~se_prev;
     wire [511:0] c_flat;
 
-    // Skewed feed: row i gets A[i][k], column i gets B[k][i], with k = feed_cnt - i.
     reg [31:0] a_in_flat, b_in_flat;
     integer i;
     always @(*) begin
@@ -42,23 +48,29 @@ module systolic_top (
     always @(posedge clk) begin
         if (rst) begin
             state <= S_LOAD; cnt <= 0; feed_cnt <= 0; clr <= 0; done <= 0;
+            loaded <= 0; se_prev <= 0;
             a_sr <= 0; b_sr <= 0; c_sr <= 0;
         end else begin
+            se_prev <= shift_en;
             case (state)
                 S_LOAD: begin
                     clr <= 0;
-                    if (shift_en) begin
+                    if (shift_en && !loaded) begin
                         if (cnt < 128) a_sr <= {a_sr[126:0], din};
                         else           b_sr <= {b_sr[126:0], din};
                         if (cnt == 255) begin
-                            cnt <= 0;
-                            // Wait for start before running
+                            loaded <= 1;
+                            cnt    <= 0;
                         end else begin
                             cnt <= cnt + 1;
                         end
                     end
-                    if (start && cnt == 0 && done == 0) begin
-                        state <= S_RUN; feed_cnt <= 0; clr <= 1;
+                    if (start && loaded) begin
+                        state    <= S_RUN;
+                        feed_cnt <= 0;
+                        clr      <= 1;
+                        done     <= 0;
+                        loaded   <= 0;
                     end
                 end
                 S_RUN: begin
@@ -72,7 +84,7 @@ module systolic_top (
                     end
                 end
                 S_READ: begin
-                    if (shift_en) begin
+                    if (se_rise) begin
                         c_sr <= {c_sr[510:0], 1'b0};
                         cnt  <= cnt + 1;
                         if (cnt == 511) begin

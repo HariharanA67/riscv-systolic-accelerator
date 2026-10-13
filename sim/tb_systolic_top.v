@@ -11,16 +11,14 @@ module tb_systolic_top;
                       .din(din), .dout(dout), .done(done));
     always #5 clk = ~clk;
 
-    // Send one 128-bit vector, MSB first, one bit per clock
+    // Send 128 bits of v, MSB first. shift_en is high for one clock per bit.
     task send_vec(input [127:0] v);
         integer b;
         begin
             for (b = 127; b >= 0; b = b - 1) begin
-                @(negedge clk);
-                shift_en = 1; din = v[b];
+                @(negedge clk); shift_en = 1; din = v[b];
+                @(negedge clk); shift_en = 0; din = 0;
             end
-            @(negedge clk);
-            shift_en = 0; din = 0;
         end
     endtask
 
@@ -28,37 +26,27 @@ module tb_systolic_top;
         errors = 0;
         #12 rst = 0;
         for (run = 0; run < 6; run = run + 1) begin
-            // Random matrices in row-major byte order; run 1 uses extremes
             for (i = 0; i < 16; i = i + 1) begin
-                if (run == 1) begin
-                    A_vec[i*8 +: 8] = -8'sd128;
-                    B_vec[i*8 +: 8] = 8'sd127;
-                end else begin
-                    A_vec[i*8 +: 8] = $random;
-                    B_vec[i*8 +: 8] = $random;
-                end
+                A_vec[i*8 +: 8] = (run == 1) ? -8'sd128 : $random;
+                B_vec[i*8 +: 8] = (run == 1) ? 8'sd127  : $random;
             end
-            // Reset between runs
             @(negedge clk); rst = 1; @(negedge clk); rst = 0;
 
             send_vec(A_vec);
             send_vec(B_vec);
 
-            // Start and wait for done
             @(negedge clk); start = 1;
             @(negedge clk); start = 0;
             wait (done == 1);
             @(negedge clk);
 
-            // Read 512 bits, MSB first
-            shift_en = 1;
+            // Read 512 bits, MSB first. One rising edge of shift_en per bit.
             for (n = 511; n >= 0; n = n - 1) begin
                 C_got[n] = dout;
-                @(negedge clk);
+                @(negedge clk); shift_en = 1;
+                @(negedge clk); shift_en = 0;
             end
-            shift_en = 0;
 
-            // Compare against reference
             for (i = 0; i < 4; i = i + 1)
                 for (j = 0; j < 4; j = j + 1) begin
                     expected = 0;
