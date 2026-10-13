@@ -33,3 +33,10 @@ sim/prog_c.hex
 sim/prog_sw.hex
 sim/tb_socc
 sim/tb_socsw
+sim/tb_c3
+sim/tb_c4
+sim/tb_hang
+sim/tb_misuse
+sim/tb_case3.v
+sim/tb_case4_check.v
+sim/tb_hang_check.v
