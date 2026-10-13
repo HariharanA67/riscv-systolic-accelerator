@@ -43,3 +43,5 @@ sim/tb_hang_check.v
 sim/tb_m2
 sim/tb_m3
 sim/tb_pat
+sim/tb_faults
+sim/tb_sweep
