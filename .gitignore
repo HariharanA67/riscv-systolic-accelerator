@@ -45,3 +45,4 @@ sim/tb_m3
 sim/tb_pat
 sim/tb_faults
 sim/tb_sweep
+sim/tb_timing
