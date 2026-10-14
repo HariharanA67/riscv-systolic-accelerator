@@ -46,3 +46,6 @@ sim/tb_pat
 sim/tb_faults
 sim/tb_sweep
 sim/tb_timing
+sim/soc_mini_mul.v
+sim/prog_swmul.hex
+sim/tb_socswmul
