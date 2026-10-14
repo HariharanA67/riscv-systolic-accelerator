@@ -1,5 +1,8 @@
 // PicoRV32 + 4 KB RAM at 0x0000_0000 + accelerator at 0x8000_0000.
-module soc_mini (
+// ENABLE_MUL selects the core's hardware multiply (1 = on, 0 = off).
+module soc_mini #(
+    parameter ENABLE_MUL = 1
+) (
     input  wire         clk,
     input  wire         rst,
     output wire [511:0] c_out
@@ -42,7 +45,7 @@ module soc_mini (
         end
     end
 
-    picorv32 #(.PROGADDR_RESET(32'h0), .STACKADDR(32'h0000_0400)) cpu (
+    picorv32 #(.ENABLE_MUL(ENABLE_MUL), .PROGADDR_RESET(32'h0), .STACKADDR(32'h0000_0400)) cpu (
         .clk(clk), .resetn(~rst),
         .mem_valid(mem_valid), .mem_instr(mem_instr), .mem_ready(mem_ready),
         .mem_addr(mem_addr), .mem_wdata(mem_wdata), .mem_wstrb(mem_wstrb),
