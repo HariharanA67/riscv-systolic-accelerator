@@ -2,7 +2,7 @@
 
 ## Interface
 - clk: rising-edge clock.
-- rst: synchronous, active high. Clears all state, including the loaded flag and the read position.
+- rst: synchronous, active high. Clears all state.
 - din: one data bit, sampled on rising clk edges where shift_en is high in LOAD.
 - shift_en: host strobe. In LOAD it shifts one input bit per clock. In READ, each rising edge shifts out one output bit.
 - start: pulse high for one clock to begin a run.
@@ -10,12 +10,12 @@
 - dout: current output bit, MSB first (valid after done).
 
 ## Sequence for one matrix multiply
-1. Assert rst for at least one clock (required once at power-up; optional between runs).
-2. Send 256 bits in LOAD: 128 bits of A, then 128 bits of B. Each block is sent MSB first (bit 127 first). Hold shift_en high for exactly one clock per bit.
+1. Assert rst for at least one clock (once at power-up; optional between runs).
+2. Send 256 bits in LOAD: 128 bits of A, then 128 bits of B, each MSB first. Hold shift_en high for one clock per bit.
 3. Pulse start for one clock. Accepted only after all 256 bits are in.
 4. Wait for done to go high.
-5. Read 512 bits of C. Sample dout, then produce one rising edge on shift_en (low, high, low). Repeat 512 times, MSB first. C element e is at bits [e*32 +: 32], row-major (element 0 = C[0][0], element 15 = C[3][3]).
-6. After the 512th bit, the wrapper returns to LOAD and is ready for the next run.
+5. Read 512 bits of C. Sample dout, then give one rising edge on shift_en (low, high, low). Repeat 512 times, MSB first. C element e is at bits [e*32 +: 32], row-major.
+6. After the 512th bit, the wrapper returns to LOAD.
 
 ## Host rules
 - Drop shift_en between bits. Each rising edge of shift_en in READ shifts one bit.
@@ -30,4 +30,4 @@
 - Operands are signed INT8; products and sums are 32-bit signed.
 
 ## Timing
-- done rises 10 cycles after start (9-cycle skewed feed plus capture).
+- done rises 11 cycles after start, measured from the negedge that starts the start pulse to the first negedge where done is high (tb_timing.v).
