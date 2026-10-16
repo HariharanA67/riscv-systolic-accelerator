@@ -49,3 +49,15 @@ sim/tb_timing
 sim/soc_mini_mul.v
 sim/prog_swmul.hex
 sim/tb_socswmul
+sim/prog_*.hex
+sim/expect_*.txt
+sim/final_addr*.txt
+sim/tb_isa_family
+sim/tb_isa
+sim/tb_isa_hs
+sim/tb_isa_where
+sim/tb_isa_trap
+sim/tb_addi_min
+sim/tb_srli_min
+sim/*.o
+sim/nr.out
