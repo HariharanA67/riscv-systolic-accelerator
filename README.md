@@ -7,12 +7,22 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 ## Status (simulation only; no hardware run)
 
 ### Verified in simulation (Icarus Verilog)
+
+#### Accelerator and wrapper
 - `rtl/systolic_os_4x4.v` + `rtl/pe_os.v`: output-stationary array. Random, stress,
   and structured-pattern tests (`sim/tb_systolic_os_flat.v`, `sim/tb_systolic_patterns.v`).
 - `rtl/systolic_top.v`: serial-I/O wrapper. Reset and back-to-back tests, a 1,000-run
   seed sweep, host-misuse tests, and fault tests (`sim/tb_systolic_top*.v`,
   `sim/tb_systolic_misuse*.v`, `sim/tb_systolic_sweep.v`, `sim/tb_systolic_faults.v`).
   Host protocol: `docs/host_protocol.md`. Start-to-done is 11 cycles (`sim/tb_timing.v`).
+
+#### PicoRV32 core and SoC
+- `rtl/picorv32.v`: **ISA coverage**: 970 checks (871 family + 99 full ISA) across 
+  R-type arithmetic (add, sub, and, or, xor, slt, sltu), branches (beq, bne, blt, bge, bltu, bgeu),
+  loads, stores, and shifts. All passing (`sim/tb_isa_family.v`, `sim/gen_families.py`).
+- **Memory stalls**: core handles random 0–3 cycle memory delays correctly; identical output 
+  vs. baseline (`sim/tb_soc_wait.v`, `sim/tb_soc_nowait.v`).
+- **Trap/breakpoint**: EBREAK instruction correctly triggers trap state (`sim/tb_soc_trap.v`).
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000.
   `ENABLE_MUL` defaults to 1. Runs a generated program (`sim/gen_prog.py`), compiled C
   firmware (`firmware/matmul.c`), and two software baselines (`firmware/matmul_sw.c`,
