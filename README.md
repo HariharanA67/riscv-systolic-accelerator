@@ -40,8 +40,7 @@ this core and these kernels. A hand-optimized kernel could narrow the gap; not t
 Timing includes the CPU copying A, B, and C.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
-- `systolic_top`: 7 I/O pins, 16 of 72 multipliers, 49.16 MHz estimate.
-- `soc_fit` (full SoC): 3 I/O pins, 16 of 72 multipliers, 2 of 108 block RAMs, 47.05 MHz estimate.
+- `systolic_top` (LFE5U-45F, CABGA381): fmax 50.47 MHz (lowest reported in nextpnr log) at 25 MHz target.
 These are nextpnr estimates, not hardware measurements.
 
 ## Not done
