@@ -65,5 +65,3 @@ These are nextpnr estimates, not hardware measurements.
 - nextpnr-ecp5 for LFE5U-45F (CABGA381): timing closed, 50.47 MHz fmax at 25 MHz target
 - Bitstream builds (`synth/build/systolic_top.bit`, not committed: build artifact)
 - Hardware testing not done (no board available)
-
-Commands: see `synth/synth_systolic.ys` and the nextpnr command in `synth/pnr.log`.
