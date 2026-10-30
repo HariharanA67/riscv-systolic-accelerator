@@ -1,0 +1,7 @@
+read_verilog ../rtl/systolic_top.v
+read_verilog ../rtl/systolic_os_4x4.v
+read_verilog ../rtl/pe_os.v
+hierarchy -check -top systolic_top
+synth_ecp5 -top systolic_top -json build/systolic_top.json
+stat
+write_verilog build/systolic_top_synth.v

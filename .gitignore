@@ -74,3 +74,12 @@ sim/tb_srli_min
 sim/*.o
 sim/nr.out
 rtl/soc_mini.v.bak
+firmware/*.o
+sim/tb_soc_c
+sim/tb_soc_c_wave
+sim/tb_soc_opt
+sim/tb_soc_opt_debug
+sim/tb_soc_sw
+sim/tb_systolic_top
+sim/tb_systolic_top_wave
+synth/*.log
