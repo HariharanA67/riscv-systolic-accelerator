@@ -1,35 +1,69 @@
-# RISC-V + Systolic Array SoC
+# INT8 Output-Stationary Systolic Matrix Multiplier (4x4) with PicoRV32
 
-## Status
-- [x] MAC unit (INT8 multiply-accumulate)
-- [x] Processing Element (PE)
-- [x] 4×4 Systolic Array
-- [x] Simulation verified (identity + random matrix tests, layout confirmed)
-- [x] Synthesis to gate-level (Yosys)
-- [x] Place & route for ECP5 45F (nextpnr-ecp5)
-- [x] Timing closed: 50.47 MHz (25 MHz target, 2× margin)
-- [x] Bitstream generated (`synth/build/systolic_top.bit`)
-- [ ] RISC-V softcore integration
-- [ ] Firmware
-- [ ] Hardware testing (simulation-only, no board)
+A Verilog design that multiplies two 4x4 signed INT8 matrices into 32-bit results.
+A PicoRV32 RISC-V core drives the accelerator through memory-mapped registers.
+A serial-I/O wrapper is also provided for a small FPGA pin count.
 
-## To run simulation
+## Status (simulation only; no hardware run)
 
-## Result
-SYSTOLIC TOP PASSED (6 serial runs)
-- Identity matrix test: layout verified (row-major A and C)
-- Random 8-bit signed matrices: correct products
-- Extreme values (−128 × 127): sign handling verified
+### Verified in simulation (Icarus Verilog)
 
-## Synthesis & P&R
+#### Accelerator and wrapper
+- `rtl/systolic_os_4x4.v` + `rtl/pe_os.v`: output-stationary array. Random, stress,
+  and structured-pattern tests (`sim/tb_systolic_os_flat.v`, `sim/tb_systolic_patterns.v`).
+- `rtl/systolic_top.v`: serial-I/O wrapper. Reset and back-to-back tests, a 1,000-run
+  seed sweep, host-misuse tests, and fault tests (`sim/tb_systolic_top*.v`,
+  `sim/tb_systolic_misuse*.v`, `sim/tb_systolic_sweep.v`, `sim/tb_systolic_faults.v`).
+  Host protocol: `docs/host_protocol.md`. Start-to-done is 11 cycles (`sim/tb_timing.v`).
 
+#### PicoRV32 core and SoC
+- `rtl/picorv32.v`: **ISA coverage**: 970 checks (871 family + 99 full ISA) across 
+  R-type arithmetic (add, sub, and, or, xor, slt, sltu), branches (beq, bne, blt, bge, bltu, bgeu),
+  loads, stores, and shifts. All passing (`sim/tb_isa_family.v`, `sim/gen_families.py`).
+- **Memory stalls**: core handles random 0–3 cycle memory delays correctly; identical output 
+  vs. baseline (`sim/tb_soc_wait.v`, `sim/tb_soc_nowait.v`).
+- **Trap/breakpoint**: EBREAK instruction correctly triggers trap state (`sim/tb_soc_trap.v`).
+- `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000.
+  `ENABLE_MUL` defaults to 1. Runs a generated program (`sim/gen_prog.py`), compiled C
+  firmware (`firmware/matmul.c`), and two software baselines (`firmware/matmul_sw.c`,
+  `firmware/matmul_sw_mul.c`). All produce correct 4x4 products.
 
-Gate-level: 1492 flip-flops, 1282 LUT4s, 16 multipliers (MULT18X18D), 312 carry chains.
-Timing: 50.47 MHz fmax, passes 25 MHz target with 2× margin.
+### Performance (simulation, whole-program cycles, PicoRV32)
+| Path | Cycles (8 seeds) |
+|---|---|
+| Accelerator (compiled C) | 1,534 on every seed |
+| Software, hardware MUL | 5,404 on every seed |
+| Software, shift-and-add (no MUL) | 25,522 to 27,893 |
 
-## Next steps
-1. Integrate PicoRV32 softcore
-2. Memory-mapped bus to accelerator
-3. Write RISC-V firmware (matmul_sw.c, matmul_accel.c)
-4. Full SoC testbench
-5. Synthesis for ULX3S (ECP5)
+Against the best software written here, the accelerator path is about 3.5x faster on
+this core and these kernels. A hand-optimized kernel could narrow the gap; not tested.
+Timing includes the CPU copying A, B, and C.
+
+### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
+- `systolic_top`: 7 I/O pins, 16 of 72 multipliers, 49.16 MHz estimate.
+- `soc_fit` (full SoC): 3 I/O pins, 16 of 72 multipliers, 2 of 108 block RAMs, 47.05 MHz estimate.
+These are nextpnr estimates, not hardware measurements.
+
+## Not done
+- No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are
+  reference material only.
+- The array is 4x4 only; it is not parameterized.
+- The wrapper does not detect host data errors or short/long reads (by design; see spec).
+
+## Run the simulations
+
+## Layout
+- `rtl/` RTL modules
+- `sim/` testbenches, program and hex generators
+- `firmware/` C firmware, startup code, linker script
+- `docs/` host protocol spec and architecture diagram
+- `constraints/` ULX3S pin constraints and pin map (reference)
+- `synth/`, `firmware/README.md` placeholders
+
+## Synthesis & place-and-route (simulation-only, no board)
+- Yosys `synth_ecp5`: 1492 TRELLIS_FF, 1282 LUT4, 312 CCU2C, 16 MULT18X18D
+- nextpnr-ecp5 for LFE5U-45F (CABGA381): timing closed, 50.47 MHz fmax at 25 MHz target
+- Bitstream builds (`synth/build/systolic_top.bit`, not committed: build artifact)
+- Hardware testing not done (no board available)
+
+Commands: see `synth/synth_systolic.ys` and the nextpnr command in `synth/pnr.log`.
