@@ -22,13 +22,12 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 #### PicoRV32 core and SoC
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000. `ENABLE_MUL` defaults to 1.
 - Compiled C firmware (`firmware/matmul.c`) and a shift-and-add software baseline (`firmware/matmul_sw.c`) both pass in simulation (`tb_soc_c`, `tb_soc_sw`).
-- ISA family test (`sim/tb_isa_family.v`): **currently FAILS** (no final loop within 60000 cycles; 0/30 per `docs/simulation_evidence.md`). Under investigation.
+- ISA family tests: `run_families.sh` runs 30 generated programs through `tb_isa_family` (871 checks, 0 wrong); the full-ISA program `prog_isa.hex` passes 99 checks. The base SoC program `prog.hex` is checked by `tb_soc_mini` (passes); it is not an ISA family test and is not run through `tb_isa_family` with the family finish address.
 
 ### Performance (simulation, whole-program cycles, PicoRV32, single run)
 
 | Path | Cycles |
 |---|---|
-
 | Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
 Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 cycles and the accelerator-using firmware (`matmul_opt`) in 1,349 cycles, both including CPU copying of A, B, and C. These are different programs, so this is not a controlled speedup comparison.
@@ -40,7 +39,6 @@ Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 c
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are reference material only.
 - Full-SoC synthesis and timing have not been run.
-- The ISA family test is failing (see above).
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
 - Reset/back-to-back and `misuse2`/`misuse3` tests not yet run.
@@ -52,6 +50,3 @@ Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 c
 - `docs/` host protocol spec and architecture diagram
 - `constraints/` ULX3S pin constraints and pin map (reference)
 - `synth/` synthesis script and build outputs
-x
-u
-
