@@ -52,3 +52,6 @@ Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 c
 - `docs/` host protocol spec and architecture diagram
 - `constraints/` ULX3S pin constraints and pin map (reference)
 - `synth/` synthesis script and build outputs
+x
+u
+
