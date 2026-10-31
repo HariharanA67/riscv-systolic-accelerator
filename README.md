@@ -35,9 +35,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 | Software, hardware MUL | 5,404 on every seed |
 | Software, shift-and-add (no MUL) | 25,522 to 27,893 |
 
-Against the best software written here, the accelerator path is about 3.5x faster on
-this core and these kernels. A hand-optimized kernel could narrow the gap; not tested.
-Timing includes the CPU copying A, B, and C.
+Against the shift-and-add software matmul in this repo, the accelerator path ran in 1534 vs 26053 cycles (about 17x, simulation only). A hand-optimized software kernel (matmul_opt.c) has not been measured. Timing includes the CPU copying A, B, and C.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.47 MHz (lowest reported in nextpnr log) at 25 MHz target.
