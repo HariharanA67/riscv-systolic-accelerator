@@ -31,10 +31,10 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 | Accelerator (compiled C, `tb_soc_c`) | 1,534 |
 | Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
-The accelerator path used about 17x fewer cycles than the shift-and-add software in this repo (simulation only). The hardware-MUL baseline and a hand-optimized kernel (`matmul_opt.c`) have not been measured. Timing includes the CPU copying A, B, and C.
+Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 cycles and the accelerator-using firmware (`matmul_opt`) in 1,349 cycles, both including CPU copying of A, B, and C. These are different programs, so this is not a controlled speedup comparison.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
-- `systolic_top` (LFE5U-45F, CABGA381): fmax 50.47 MHz (lowest reported in the nextpnr log) at 25 MHz target. This is for the wrapper only, not the full SoC.
+- `systolic_top` (LFE5U-45F, CABGA381): post-route fmax 52.85 MHz at 25 MHz target (nextpnr-ecp5 0.10, from `synth/run_synth.sh`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
 - These are nextpnr estimates, not hardware measurements.
 
 ## Not done
