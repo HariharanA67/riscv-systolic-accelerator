@@ -83,3 +83,7 @@ sim/tb_soc_sw
 sim/tb_systolic_top
 sim/tb_systolic_top_wave
 synth/*.log
+sim/tb_soc_wait_test
+sim/tb_systolic_faults
+sim/tb_systolic_misuse
+sim/tb_systolic_sweep
