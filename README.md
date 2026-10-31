@@ -28,7 +28,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 | Path | Cycles |
 |---|---|
-| Accelerator (compiled C, `tb_soc_c`) | 1,534 |
+
 | Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
 Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 cycles and the accelerator-using firmware (`matmul_opt`) in 1,349 cycles, both including CPU copying of A, B, and C. These are different programs, so this is not a controlled speedup comparison.
