@@ -25,17 +25,16 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 - **Trap/breakpoint**: EBREAK instruction correctly triggers trap state (`sim/tb_soc_trap.v`).
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000.
   `ENABLE_MUL` defaults to 1. Runs a generated program (`sim/gen_prog.py`), compiled C
-  firmware (`firmware/matmul.c`), and two software baselines (`firmware/matmul_sw.c`,
-  `firmware/matmul_sw_mul.c`). All produce correct 4x4 products.
+firmware (`firmware/matmul.c`) and a shift-and-add software baseline (`firmware/matmul_sw.c`), both verified in simulation.
 
-### Performance (simulation, whole-program cycles, PicoRV32)
-| Path | Cycles (8 seeds) |
+
+### Performance (simulation, whole-program cycles, PicoRV32, single run)
+| Path | Cycles |
 |---|---|
-| Accelerator (compiled C) | 1,534 on every seed |
-| Software, hardware MUL | 5,404 on every seed |
-| Software, shift-and-add (no MUL) | 25,522 to 27,893 |
+| Accelerator (compiled C, `tb_soc_c`) | 1,534 |
+| Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
-Against the shift-and-add software matmul in this repo, the accelerator path ran in 1534 vs 26053 cycles (about 17x, simulation only). A hand-optimized software kernel (matmul_opt.c) has not been measured. Timing includes the CPU copying A, B, and C.
+The accelerator path used about 17x fewer cycles than the shift-and-add software in this repo (simulation only). The hardware-MUL baseline and a hand-optimized kernel (`matmul_opt.c`) have not been measured. Timing includes the CPU copying A, B, and C.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.47 MHz (lowest reported in nextpnr log) at 25 MHz target.
