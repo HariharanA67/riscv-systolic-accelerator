@@ -42,8 +42,6 @@ Measured in simulation: the software firmware (`matmul_sw`) finished in 26,053 c
 - Full-SoC synthesis and timing have not been run.
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
-- Simulation checks run in this session: misuse2 (start during run and readout), misuse3 (repeated start), patterns (edge values), top (serial runs with reset), and an 8-run back-to-back test with no reset. The back-to-back test fails when the accumulator clear is disabled.
-
 ## Layout
 - `rtl/` RTL modules
 - `sim/` testbenches, program and hex generators
