@@ -87,3 +87,8 @@ sim/tb_soc_wait_test
 sim/tb_systolic_faults
 sim/tb_systolic_misuse
 sim/tb_systolic_sweep
+sim/tb_systolic_b2b
+sim/tb_systolic_misuse2
+sim/tb_systolic_misuse3
+sim/tb_systolic_os_flat
+sim/tb_systolic_patterns
