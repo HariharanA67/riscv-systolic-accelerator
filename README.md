@@ -10,14 +10,16 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 #### Accelerator and wrapper
 - `rtl/systolic_os_4x4.v` + `rtl/pe_os.v`: output-stationary 4x4 array. Verified with
-  `sim/tb_systolic_os_flat.v` and `sim/tb_systolic_patterns.v`.
+  `sim/tb_systolic_patterns.v` (patterns P1–P5, PASSED).
 - `rtl/systolic_top.v`: serial-I/O wrapper.
   - `sim/tb_systolic_top.v`: 6 serial runs (random, extreme-value, identity), PASSED.
   - `sim/tb_systolic_sweep.v`: 1000 runs, 0 failed, PASSED.
   - `sim/tb_systolic_faults.v`: 3 fault cases, PASSED.
   - `sim/tb_systolic_misuse.v`: 5 host-misuse cases, PASSED.
+  - `sim/tb_systolic_misuse2.v`: 2 cases (start during RUN and READ), PASSED.
+  - `sim/tb_systolic_misuse3.v`: repeated-start cases, PASSED.
+  - `sim/tb_systolic_b2b.v`: 8 back-to-back runs with no reset between, PASSED.
   - `sim/tb_timing.v`: start-to-done is 11 cycles.
-- Host protocol: `docs/host_protocol.md`.
 
 #### PicoRV32 core and SoC
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000. `ENABLE_MUL` defaults to 1.
