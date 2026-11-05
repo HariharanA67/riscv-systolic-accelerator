@@ -23,7 +23,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000. `ENABLE_MUL` defaults to 1.
 - Compiled C firmware (`firmware/matmul.c`) and a shift-and-add software baseline (`firmware/matmul_sw.c`) both pass in simulation (`tb_soc_c`, `tb_soc_sw`).
 - Wait-state test (`sim/tb_wait_check.v`, stall wrapper in `sim/test_wrappers/`, not `rtl/`): 39 words checked against `expect_arith_add_0.txt`. Baseline 1,089 cycles; stalled 1,219 cycles with 377 stall cycles. Both pass. The stall wrapper is a test-only copy of `soc_mini` and is not part of the RTL.
-- ISA family tests: `run_families.sh` runs 30 generated programs through `tb_isa_family` (871 checks, 0 wrong); the full-ISA program `prog_isa.hex` passes 99 checks. The base SoC program `prog.hex` is checked by `tb_soc_mini` (passes); it is not an ISA family test and is not run through `tb_isa_family` with the family finish address.
+- ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
 ### Performance (simulation, whole-program cycles, PicoRV32, single run)
 
