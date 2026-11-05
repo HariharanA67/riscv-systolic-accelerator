@@ -18,7 +18,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
   - `sim/tb_systolic_misuse.v`: 5 host-misuse cases, PASSED.
   - `sim/tb_systolic_misuse2.v`: 2 cases (start during RUN and READ), PASSED.
   - `sim/tb_systolic_misuse3.v`: repeated-start cases, PASSED.
-  - `sim/tb_systolic_b2b.v`: 8 back-to-back runs with no reset between, PASSED.
+   - `sim/tb_systolic_b2b.v`: 8 back-to-back runs with no reset between, PASSED. A mutant with the accumulator clear removed fails runs 2–8 (16 of 16 outputs wrong in each).
   - `sim/tb_timing.v`: start-to-done is 11 cycles.
 
 #### PicoRV32 core and SoC
