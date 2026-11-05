@@ -24,9 +24,9 @@ module tb_isa_family;
     end
 
     initial begin
-        if (!$value$plusargs("hex=%s", hexfile)) hexfile = "prog.hex";
-        if (!$value$plusargs("exp=%s", expfile)) expfile = "expect.txt";
-        if (!$value$plusargs("fin=%s", finalfile)) finalfile = "final_addr.txt";
+        if (!$value$plusargs("hex=%s", hexfile)) begin $display("ERROR: pass +hex= +exp= +fin="); $finish; end
+        if (!$value$plusargs("exp=%s", expfile)) begin $display("ERROR: pass +hex= +exp= +fin="); $finish; end
+        if (!$value$plusargs("fin=%s", finalfile)) begin $display("ERROR: pass +hex= +exp= +fin="); $finish; end
         errors = 0; checks = 0; loop_hits = 0;
         fd = $fopen(finalfile, "r"); rc = $fscanf(fd, "%h", rfinal); $fclose(fd);
         FINAL_LOOP = rfinal;
