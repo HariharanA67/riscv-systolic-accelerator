@@ -92,3 +92,5 @@ sim/tb_systolic_misuse2
 sim/tb_systolic_misuse3
 sim/tb_systolic_os_flat
 sim/tb_systolic_patterns
+sim/tb_wait_check
+sim/tb_wait_check
