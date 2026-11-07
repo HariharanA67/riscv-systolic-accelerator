@@ -35,7 +35,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 | Software, hardware MUL (`tb_soc_swmul`) | 5,382 |
 | Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
-All four were checked against the expected product (one input set). Versus the hardware-MUL software, the optimized accelerator path used about 4x fewer cycles (simulation only, single input set). Timing includes the CPU copying A, B, and C.
+All four were checked against the expected product (one input set). Versus the hardware-MUL software, the optimized accelerator path used about 4x fewer cycles (simulation only). Timing includes the CPU copying A, B, and C.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.32 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr.log`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
