@@ -95,3 +95,4 @@ sim/tb_systolic_patterns
 sim/tb_wait_check
 sim/tb_wait_check
 sim/tb_soc_swmul
+sim/tb_soc_swmul
