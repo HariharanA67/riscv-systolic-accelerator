@@ -28,20 +28,20 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 - ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
 ### Performance (simulation, whole-program cycles, PicoRV32, single run)
-
 | Path | Cycles |
 |---|---|
-| Accelerator (compiled C, `tb_soc_c`) | 1,534 |
+| Accelerator, compiled C (`tb_soc_c`) | 1,534 |
+| Accelerator, optimized C (`tb_soc_opt`) | 1,327 |
 | Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
-The accelerator path used about 17x fewer cycles than the shift-and-add software (simulation only). A hand-optimized kernel (`matmul_opt.c`) has not been measured. Timing includes the CPU copying A, B, and C.
+Both accelerator versions were checked against the expected product. The accelerator path used about 17x fewer cycles than the shift-and-add software (simulation only). The hardware-MUL software baseline has not been measured. Timing includes the CPU copying A, B, and C.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.32 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr.log`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are reference material only.
 - Full-SoC synthesis and timing have not been run.
-- The hand-optimized kernel (`matmul_opt.c`) has not been measured; its cycle counter (`tb_soc_opt`) is not yet working.
+- Hardware-MUL software baseline (`ENABLE_MUL` variant of `matmul_sw`) not measured.
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
 

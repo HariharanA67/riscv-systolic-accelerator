@@ -1,37 +1,58 @@
 `timescale 1ns / 1ps
 module tb_soc_opt ();
     reg clk, rst;
+    integer i, j, k, errors;
+    reg signed [31:0] expected, got;
     wire [511:0] c_out;
     integer cycle, done_cycle;
-    
+
     soc_mini #(.ENABLE_MUL(1)) dut (
         .clk(clk),
         .rst(rst),
         .c_out(c_out)
     );
-    
+
     initial begin
         clk = 0;
         rst = 1;
         cycle = 0;
         done_cycle = 0;
-        
+
         $readmemh("prog_opt.hex", dut.ram);
-        
+
         #10 rst = 0;
-        
-        // Run until we return from main (x1 goes back to near 0x8)
+
+        // Run until we reach the final loop at 0x8
         repeat(50000) begin
             @(posedge clk);
             cycle = cycle + 1;
-            if (dut.cpu.reg_pc >= 32'h8 && dut.cpu.reg_pc <= 32'h10 && done_cycle == 0) begin
+            if (dut.cpu.reg_pc == 32'h8 && done_cycle == 0) begin
                 done_cycle = cycle;
             end
         end
-        
+
         $display("OPT done_cycle=%0d", done_cycle);
+
+        // Verify C against expected product (same layout as tb_soc_c)
+        errors = 0;
+        for (i = 0; i < 4; i = i + 1)
+            for (j = 0; j < 4; j = j + 1) begin
+                expected = 0;
+                for (k = 0; k < 4; k = k + 1)
+                    expected = expected + $signed(dut.ram[128 + i*4 + k][7:0]) * $signed(dut.ram[144 + k*4 + j][7:0]);
+                got = dut.ram[256 + i*4 + j];
+                if (got !== expected) begin
+                    errors = errors + 1;
+                    $display("MISMATCH C[%0d][%0d]: got %0d expected %0d", i, j, got, expected);
+                end
+            end
+        if (errors == 0)
+            $display("OPT FIRMWARE PASSED: C verified, done_cycle=%0d", done_cycle);
+        else
+            $display("OPT FIRMWARE FAILED: %0d mismatches", errors);
+
         $finish;
     end
-    
+
     always #5 clk = ~clk;
 endmodule
