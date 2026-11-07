@@ -42,7 +42,6 @@ All four were checked against the expected product (one input set). Versus the h
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are reference material only.
 - Full-SoC synthesis and timing have not been run.
-
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
 
