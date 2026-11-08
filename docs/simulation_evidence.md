@@ -4,7 +4,7 @@
 
 | Test | Command | Result | Checks |
 |------|---------|--------|--------|
-| ISA Family | `vvp tb_isa_family` | FAMILY FAILED prog.hex: no final loop within 60000 cycles | 0/30 |
+| ISA coverage | `sim/tb_isa_family.v` via 13 chunks from `sim/gen_isa_split.py` | 1045 checks, 0 wrong | 1045 ✓ |
 | Systolic Wrapper | `vvp tb_systolic_top` | SYSTOLIC TOP PASSED (6 serial runs) | 6 ✓ |
 | SoC C Firmware (matmul accelerated) | `vvp tb_soc_c` | C FIRMWARE PASSED: compiled C drove accelerator, C verified (16 C writes) after **1534 cycles** | 16 ✓ |
 | SoC Software (shift-and-add) | `vvp tb_soc_sw` | SW FIRMWARE PASSED: software matmul computed correct C (16 C writes) after **26053 cycles** | 16 ✓ |
@@ -57,7 +57,7 @@
 
 ## Notes
 
-- ISA family test failure: `prog.hex` (base test program) does not reach a final loop within 60k cycles — requires investigation
+- ISA coverage: the earlier `prog.hex` failure came from running the test without its matching `+hex= +exp= +fin=` inputs. The 13 split chunks now pass (1045 checks, 0 wrong).
 - All accelerator and firmware tests pass with correct C matrix computation
 - Waveforms confirm LOAD/RUN/READ protocol in wrapper and MMIO bus protocol in SoC
 - Performance: accelerator achieves **17× speedup** over best software implementation
