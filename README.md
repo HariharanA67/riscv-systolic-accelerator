@@ -43,9 +43,19 @@ All 16 outputs were checked against the expected product for every seed, and eve
 - `soc_fit` (full SoC: PicoRV32 + accelerator, LFE5U-45F, CABGA381): Yosys synth_ecp5 succeeds (1868 TRELLIS_FF, 3321 LUT4, 16 MULT18X18D, 2 DP16KD). nextpnr fmax 53.22 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr_soc.log`). Place-and-route estimate only, not measured on hardware.
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are reference material only.
-
+- Full-SoC synthesis is place-and-route checked only (see Synthesis); not measured on hardware.
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
+
+## How to regenerate generated files
+These files are gitignored and rebuilt from source:
+
+- ISA chunks (13 programs with expected values and final addresses):
+  `cd sim && python3 gen_isa_split.py`
+- Firmware hex (from the linked ELF):
+  `riscv32-unknown-elf-objcopy -O binary firmware/matmul_opt.elf /tmp/opt.bin && python3 gen_opt_hex.py`
+  (same pattern for `matmul_sw_mul.elf` with `gen_swmul_hex.py`)
+- Testbench binaries: `iverilog -g2009 -o <name> ...` (see "Run the simulations")
 
 ## Layout
 - `rtl/` RTL modules
