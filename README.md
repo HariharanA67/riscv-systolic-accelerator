@@ -25,6 +25,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000. `ENABLE_MUL` defaults to 1.
 - Compiled C firmware (`firmware/matmul.c`) and a shift-and-add software baseline (`firmware/matmul_sw.c`) both pass in simulation (`tb_soc_c`, `tb_soc_sw`).
 - Wait-state test (`sim/tb_wait_check.v`, stall wrapper in `sim/test_wrappers/`, not `rtl/`): 39 words checked against `expect_arith_add_0.txt`. Baseline 1,089 cycles; stalled 1,219 cycles with 377 stall cycles (random seed per run). Both pass. The stall wrapper is a test-only copy of `soc_mini` and is not part of the RTL.
+
 - ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
 ### Performance (simulation, whole-program cycles, PicoRV32, single run)
@@ -39,9 +40,10 @@ All four were checked against the expected product (one input set). Versus the h
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.32 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr.log`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
+- `soc_fit` (full SoC: PicoRV32 + accelerator, LFE5U-45F, CABGA381): Yosys synth_ecp5 succeeds (1868 TRELLIS_FF, 3321 LUT4, 16 MULT18X18D, 2 DP16KD). nextpnr fmax 53.22 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr_soc.log`). Place-and-route estimate only, not measured on hardware.
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are reference material only.
-- Full-SoC synthesis and timing have not been run.
+
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
 

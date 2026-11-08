@@ -1,0 +1,11 @@
+read_verilog ../rtl/soc_fit.v
+read_verilog ../rtl/soc_mini.v
+read_verilog ../rtl/accel_mmio.v
+read_verilog ../rtl/picorv32.v
+read_verilog ../rtl/systolic_top.v
+read_verilog ../rtl/systolic_os_4x4.v
+read_verilog ../rtl/pe_os.v
+hierarchy -check -top soc_fit
+synth_ecp5 -top soc_fit -json build/soc_fit.json
+stat
+write_verilog build/soc_fit_synth.v
