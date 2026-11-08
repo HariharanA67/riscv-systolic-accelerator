@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 module tb_soc_c ();
     reg clk, rst;
-    integer seed;
+    integer seed, mode;
     integer i, j, k, errors;
     reg signed [31:0] expected, got;
     wire [511:0] c_out;
@@ -19,14 +19,25 @@ module tb_soc_c ();
         cycle = 0;
         done_cycle = 0;
         if (!$value$plusargs("seed=%d", seed)) seed = 7;
+        if (!$value$plusargs("mode=%d", mode)) mode = 0;
 
         $readmemh("prog_c.hex", dut.ram);
 
-        // Defined, signed INT8 inputs: A at words 128..143, B at words 144..159
-        // (byte addresses 0x200 and 0x240, same as RAM_A/RAM_B in matmul_opt.c)
+        // Input load. mode 0: seeded random; 1: all -128; 2: all 127; 3: A=-128, B=127
         for (i = 0; i < 16; i = i + 1) begin
-            dut.ram[128 + i] = ($random(seed) % 128);
-            dut.ram[144 + i] = ($random(seed) % 128);
+            if (mode == 1) begin
+                dut.ram[128 + i] = -128;
+                dut.ram[144 + i] = -128;
+            end else if (mode == 2) begin
+                dut.ram[128 + i] = 127;
+                dut.ram[144 + i] = 127;
+            end else if (mode == 3) begin
+                dut.ram[128 + i] = -128;
+                dut.ram[144 + i] = 127;
+            end else begin
+                dut.ram[128 + i] = ($random(seed) % 128);
+                dut.ram[144 + i] = ($random(seed) % 128);
+            end
         end
 
         #10 rst = 0;

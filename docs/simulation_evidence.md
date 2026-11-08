@@ -7,7 +7,7 @@
 | ISA coverage | `sim/tb_isa_family.v` via 13 chunks from `sim/gen_isa_split.py` | 1045 checks, 0 wrong | 1045 ✓ |
 | Systolic Wrapper | `vvp tb_systolic_top` | SYSTOLIC TOP PASSED (6 serial runs) | 6 ✓ |
 | SoC C Firmware (matmul accelerated) | `vvp tb_soc_c` | C FIRMWARE PASSED: compiled C drove accelerator, C verified (16 C writes) after **1534 cycles** | 16 ✓ |
-| SoC Software (shift-and-add) | `vvp tb_soc_sw` | SW FIRMWARE PASSED: software matmul computed correct C (16 C writes) after **26053 cycles** | 16 ✓ |
+| SoC Software (shift-and-add) | `vvp tb_soc_sw` | SW FIRMWARE PASSED: C verified on 100 seeds + 3 extreme modes | 16 ✓ per run |
 | SoC Software with Hardware MUL | `vvp tb_soc_swmul` | (pending: requires soc_mini_mul module) | — |
 
 ## Performance Comparison
@@ -15,7 +15,7 @@
 | Implementation | Cycles | Speedup vs Best SW |
 |---|---|---|
 | Accelerator (compiled C) | **1,534** | 17.0× |
-| Software (shift-and-add) | 26,053 | 1.0× |
+| Software (shift-and-add) | 25,838 (seed 7) | 1.0× |
 | Software (hardware MUL) | (pending) | — |
 
 ## Waveform Evidence
@@ -60,5 +60,4 @@
 - ISA coverage: the earlier `prog.hex` failure came from running the test without its matching `+hex= +exp= +fin=` inputs. The 13 split chunks now pass (1045 checks, 0 wrong).
 - All accelerator and firmware tests pass with correct C matrix computation
 - Waveforms confirm LOAD/RUN/READ protocol in wrapper and MMIO bus protocol in SoC
-- Performance (single-run cycle counts across 100 seeds, simulation only): the compiled-C accelerator path (1,512 cycles, fixed) used about 17× fewer cycles than shift-and-add software (22,103–27,515 cycles across seeds; 25,838 at seed 7). Against the hardware-MUL software (5,382 cycles, fixed), the optimized accelerator path (1,327 cycles, fixed) used about 4× fewer.
-
+- Performance (simulation only): the compiled-C accelerator path (1,512 cycles, fixed) used about 17× fewer cycles than shift-and-add software (22,103–32,238 cycles across 100 seeds and extreme-value modes; 25,838 at seed 7). Against the hardware-MUL software (5,382 cycles, fixed), the optimized accelerator path (1,327 cycles, fixed) used about 4× fewer.

@@ -28,27 +28,20 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 - ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
-### Performance (simulation, whole-program cycles, PicoRV32, 100 seeded input sets)
+### Performance (simulation, whole-program cycles, PicoRV32, 100 seeded input sets plus 3 extreme-value modes)
 | Path | Cycles |
 |---|---|
-| Accelerator, compiled C (`tb_soc_c`) | 1,512 (all seeds) |
-| Accelerator, optimized C (`tb_soc_opt`) | 1,327 (all seeds) |
-| Software, hardware MUL (`tb_soc_swmul`) | 5,382 (all seeds) |
-| Software, shift-and-add (`tb_soc_sw`) | 22,103–27,515 across 100 seeds (25,838 at seed 7) |
+| Accelerator, compiled C (`tb_soc_c`) | 1,512 (fixed) |
+| Accelerator, optimized C (`tb_soc_opt`) | 1,327 (fixed) |
+| Software, hardware MUL (`tb_soc_swmul`) | 5,382 (fixed) |
+| Software, shift-and-add (`tb_soc_sw`) | 22,103–32,238 (100 seeds plus extreme modes; 25,838 at seed 7) |
 
-All 16 outputs were checked against the expected product for every seed, and every run passed. The shift-and-add count varies with the data; the others are fixed. Accelerator paths used about 17x (compiled C vs. shift-and-add) and 4x (optimized vs. hardware MUL) fewer cycles, simulation only. Timing includes the CPU copying A, B, and C.
+All four firmwares were checked against the expected product on 100 seeded input sets and on three extreme-value inputs (all -128, all 127, and A = -128 with B = 127). Every output was compared in every run; 0 failures. The accelerator and hardware-MUL counts are fixed; the shift-and-add count depends on the data. Accelerator paths used about 17x fewer cycles than shift-and-add software, and the optimized path about 4x fewer than hardware-MUL software. Simulation only. Timing includes the CPU copying A, B, and C.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.32 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr.log`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
 - `soc_fit` (full SoC: PicoRV32 + accelerator, LFE5U-45F, CABGA381): Yosys synth_ecp5 succeeds (1868 TRELLIS_FF, 3321 LUT4, 16 MULT18X18D, 2 DP16KD). nextpnr fmax 53.22 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr_soc.log`). Place-and-route estimate only, not measured on hardware.
 ## Not done
-- No hardware run. `constraints/ulx3s_systolic.lpf` and `constraints/pin_map.csv` are reference material only.
-- Full-SoC synthesis is place-and-route checked only (see Synthesis); not measured on hardware.
-- The array is 4x4 only; it is not parameterized.
-- The wrapper does not detect host data errors or short/long reads (by design; see spec).
-| Software, shift-and-add (`tb_soc_sw`) | 22,103–27,515 across 100 seeds (25,838 at seed 7) |
-
-All four firmwares were checked against the expected product on 100 seeded input sets (all 16 outputs compared per run, 0 failures). The compiled-C and optimized accelerator counts are fixed across seeds; the shift-and-add count varies with the data. Accelerator paths used about 17x fewer cycles than shift-and-add software, and the optimized path about 4x fewer than hardware-MUL software. Simulation only. Timing includes the CPU copying A, B, and C.
 
 ## How to regenerate generated files
 These files are gitignored and rebuilt from source:
