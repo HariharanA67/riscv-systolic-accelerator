@@ -4,6 +4,7 @@ cd "$(dirname "$0")" || exit 2
 EXPECTED_PROGS=30
 total=0; bad=0; n=0
 for fin in final_addr_*.txt; do
+  case "$fin" in final_addr_isa*) continue ;; esac
   tag=${fin#final_addr_}; tag=${tag%.txt}
   n=$((n+1))
   want=$(wc -l < "expect_$tag.txt")

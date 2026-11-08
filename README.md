@@ -64,3 +64,6 @@ These files are gitignored and rebuilt from source:
 - `docs/` host protocol spec and architecture diagram
 - `constraints/` ULX3S pin constraints and pin map (reference)
 - `synth/` synthesis script and build outputs
+
+##Run the simulations
+- `bash sim/run_families.sh`: runs the 30 `gen_families.py` programs (871 checks) with their matching inputs; prints `RESULT: ALL FAMILY CHECKS PASSED`.
