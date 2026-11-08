@@ -28,13 +28,13 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 - ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
-### Performance (simulation, whole-program cycles, PicoRV32, 10 seeded input sets)
+### Performance (simulation, whole-program cycles, PicoRV32, 100 seeded input sets)
 | Path | Cycles |
 |---|---|
 | Accelerator, compiled C (`tb_soc_c`) | 1,512 (all seeds) |
 | Accelerator, optimized C (`tb_soc_opt`) | 1,327 (all seeds) |
 | Software, hardware MUL (`tb_soc_swmul`) | 5,382 (all seeds) |
-| Software, shift-and-add (`tb_soc_sw`) | 23,594–26,925 across seeds (25,838 at seed 7) |
+| Software, shift-and-add (`tb_soc_sw`) | 22,103–27,515 across 100 seeds (25,838 at seed 7) |
 
 All 16 outputs were checked against the expected product for every seed, and every run passed. The shift-and-add count varies with the data; the others are fixed. Accelerator paths used about 17x (compiled C vs. shift-and-add) and 4x (optimized vs. hardware MUL) fewer cycles, simulation only. Timing includes the CPU copying A, B, and C.
 
@@ -46,6 +46,9 @@ All 16 outputs were checked against the expected product for every seed, and eve
 - Full-SoC synthesis is place-and-route checked only (see Synthesis); not measured on hardware.
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
+| Software, shift-and-add (`tb_soc_sw`) | 22,103–27,515 across 100 seeds (25,838 at seed 7) |
+
+All four firmwares were checked against the expected product on 100 seeded input sets (all 16 outputs compared per run, 0 failures). The compiled-C and optimized accelerator counts are fixed across seeds; the shift-and-add count varies with the data. Accelerator paths used about 17x fewer cycles than shift-and-add software, and the optimized path about 4x fewer than hardware-MUL software. Simulation only. Timing includes the CPU copying A, B, and C.
 
 ## How to regenerate generated files
 These files are gitignored and rebuilt from source:
@@ -65,5 +68,5 @@ These files are gitignored and rebuilt from source:
 - `constraints/` ULX3S pin constraints and pin map (reference)
 - `synth/` synthesis script and build outputs
 
-##Run the simulations
+## Run the simulations
 - `bash sim/run_families.sh`: runs the 30 `gen_families.py` programs (871 checks) with their matching inputs; prints `RESULT: ALL FAMILY CHECKS PASSED`.
