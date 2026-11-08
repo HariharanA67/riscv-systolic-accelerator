@@ -60,5 +60,5 @@
 - ISA coverage: the earlier `prog.hex` failure came from running the test without its matching `+hex= +exp= +fin=` inputs. The 13 split chunks now pass (1045 checks, 0 wrong).
 - All accelerator and firmware tests pass with correct C matrix computation
 - Waveforms confirm LOAD/RUN/READ protocol in wrapper and MMIO bus protocol in SoC
-- Performance: accelerator achieves **17× speedup** over best software implementation
+- Performance (single-run cycle counts across 10 seeds, simulation only): the compiled-C accelerator path (1,512 cycles) used about 17× fewer cycles than shift-and-add software (25,838 cycles at seed 7; 23,594–26,925 across seeds). Against the hardware-MUL software (5,382 cycles), the optimized accelerator path (1,327 cycles) used about 4× fewer.
 
