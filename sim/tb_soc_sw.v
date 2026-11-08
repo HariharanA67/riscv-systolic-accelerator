@@ -18,7 +18,7 @@ module tb_soc_sw ();
         rst = 1;
         cycle = 0;
         done_cycle = 0;
-        seed = 7;
+        if (!$value$plusargs("seed=%d", seed)) seed = 7;
 
         $readmemh("prog_sw.hex", dut.ram);
 
