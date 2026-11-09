@@ -28,7 +28,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 - ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
-   - Full SoC (`rtl/soc_fit.v`, the synthesis top): `sim/tb_soc_fit.v` runs the optimized firmware and checks all 16 C values; PASSED in 4 modes, 1,327 cycles.
+- Full SoC (`rtl/soc_fit.v`, the synthesis top): `sim/tb_soc_fit.v` runs the optimized firmware and checks all 16 C values; PASSED in 4 modes, 1,327 cycles.
 
 ### Performance (simulation, whole-program cycles, PicoRV32, 100 seeded input sets plus 3 extreme-value modes)
 | Path | Cycles |
