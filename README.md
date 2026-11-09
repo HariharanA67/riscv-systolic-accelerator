@@ -28,6 +28,8 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 - ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`. Run each chunk with its matching `+hex= +exp= +fin=` files.
 
+   - Full SoC (`rtl/soc_fit.v`, the synthesis top): `sim/tb_soc_fit.v` runs the optimized firmware and checks all 16 C values; PASSED in 4 modes, 1,327 cycles.
+
 ### Performance (simulation, whole-program cycles, PicoRV32, 100 seeded input sets plus 3 extreme-value modes)
 | Path | Cycles |
 |---|---|
@@ -41,7 +43,12 @@ All four firmwares were checked against the expected product on 100 seeded input
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): fmax 50.32 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr.log`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
 - `soc_fit` (full SoC: PicoRV32 + accelerator, LFE5U-45F, CABGA381): Yosys synth_ecp5 succeeds (1868 TRELLIS_FF, 3321 LUT4, 16 MULT18X18D, 2 DP16KD). nextpnr fmax 53.22 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr_soc.log`). Place-and-route estimate only, not measured on hardware.
+
 ## Not done
+- No hardware run. `constraints/ulx3s_systolic.lpf`, `constraints/pin_map.csv`, and `constraints/soc_fit.lpf` are reference material; pin mapping is not verified against a board.
+- Full-SoC behavior test (`sim/tb_soc_fit.v`) covers the optimized firmware with seed 7 and the 3 extreme modes only, not the 100-seed range.
+- The array is 4x4 only; it is not parameterized.
+- The wrapper does not detect host data errors or short/long reads (by design; see spec).
 
 ## How to regenerate generated files
 These files are gitignored and rebuilt from source:
@@ -62,4 +69,4 @@ These files are gitignored and rebuilt from source:
 - `synth/` synthesis script and build outputs
 
 ## Run the simulations
-- `bash sim/run_families.sh`: runs the 30 `gen_families.py` programs (871 checks) with their matching inputs; prints `RESULT: ALL FAMILY CHECKS PASSED`.
+ - `bash sim/run_families.sh`: runs the 30 `gen_families.py` programs (871 checks) with their matching inputs; prints `RESULT: ALL FAMILY CHECKS PASSED`.
