@@ -97,3 +97,4 @@ sim/tb_wait_check
 sim/tb_soc_swmul
 sim/tb_soc_swmul
 sim/tb_soc_fit
+sim/tb_soc_fit_c
