@@ -71,4 +71,4 @@ These files are gitignored and rebuilt from source:
 ## Run the simulations
  - `bash sim/run_families.sh`: runs the 30 `gen_families.py` programs (871 checks) with their matching inputs; prints `RESULT: ALL FAMILY CHECKS PASSED`.
  - ISA chunks: `cd sim && python3 gen_isa_split.py`, then run each `prog_isa<k>.hex` with its matching `expect_isa<k>.txt` and `final_addr_isa<k>.txt` via `+hex= +exp= +fin=`.
-
+- Firmware ELFs are optional to rebuild; the committed `sim/prog_*.hex` files are the reference inputs. See `firmware/README.md`.
