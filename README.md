@@ -23,30 +23,28 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 #### PicoRV32 core and SoC
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000. `ENABLE_MUL` defaults to 1.
-- Firmware (`firmware/matmul.c`, `matmul_sw.c`, `matmul_opt.c`, `matmul_sw_mul.c`) checked on 100 seeded inputs and 3 extreme-value modes; see Performance.
+- Firmware checked in simulation: `matmul_sw` (`tb_soc_sw`, 26,053 cycles) and `matmul_opt` (`tb_soc_opt_check`, 1,349 cycles), both on seed-7 data. The compiled-C `matmul.c` is not re-verified here.
 - Wait-state test (`sim/tb_wait_check.v`, stall wrapper in `sim/test_wrappers/`, not `rtl/`): 39 words checked against `expect_arith_add_0.txt`. Baseline 1,089 cycles; stalled 1,219 cycles with 377 stall cycles (random seed per run). Both pass. The stall wrapper is a test-only copy of `soc_mini` and is not part of the RTL.
 
-- ISA coverage (`sim/gen_isa_full.py` via `sim/gen_isa_split.py`): 1045 checks in 13 chunks, 0 wrong on `sim/tb_isa_family.v`.
+- ISA: 30 family programs via `run_families.sh` (871 checks, 0 wrong); full-ISA program `prog_isa.hex` (99 checks, 0 wrong).
 
-- Full SoC (`rtl/soc_fit.v`, the synthesis top): `sim/tb_soc_fit.v` runs the optimized firmware and checks all 16 C values; PASSED in 4 modes, 1,327 cycles.
+- Full SoC (`rtl/soc_fit.v`, synthesis top): wraps `soc_mini` with an XOR reduction of the accelerator output. Optimized-firmware matmul is checked on `soc_mini` by `sim/tb_soc_opt_check.v` (passes; an A-path mutant fails).
 
-### Performance (simulation, whole-program cycles, PicoRV32, 100 seeded input sets plus 3 extreme-value modes)
+### Performance (simulation, seed-7 data, whole-program cycles, PicoRV32)
 | Path | Cycles |
 |---|---|
-| Accelerator, compiled C (`tb_soc_c`) | 1,512 (fixed) |
-| Accelerator, optimized C (`tb_soc_opt`) | 1,327 (fixed) |
-| Software, hardware MUL (`tb_soc_swmul`) | 5,382 (fixed) |
-| Software, shift-and-add (`tb_soc_sw`) | 22,103–32,238 (100 seeds plus extreme modes; max from mode 1; 25,838 at seed 7) |
+| Accelerator, optimized C (`tb_soc_opt_check`) | 1,349 |
+| Software, shift-and-add (`tb_soc_sw`) | 26,053 |
 
-All four firmwares were checked against the expected product on 100 seeded input sets and on three extreme-value inputs (all -128, all 127, and A = -128 with B = 127). Every output was compared in every run; 0 failures. The accelerator and hardware-MUL counts are fixed; the shift-and-add count depends on the data. Accelerator paths used about 17x fewer cycles than shift-and-add software, and the optimized path about 4x fewer than hardware-MUL software. Simulation only. Timing includes the CPU copying A, B, and C.
+Simulation only. The two rows are different programs, so this is not a controlled speedup comparison. Timing includes the CPU copying A, B, and C. No hardware-MUL baseline was run in this session.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
-- `systolic_top` (LFE5U-45F, CABGA381): fmax 50.32 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr.log`; gitignored, regenerate with the command in `synth/synth_systolic.ys`). Place-and-route estimate only, not measured on hardware. This is for the wrapper only, not the full SoC.
-- `soc_fit` (full SoC: PicoRV32 + accelerator, LFE5U-45F, CABGA381): Yosys synth_ecp5 succeeds (1868 TRELLIS_FF, 3321 LUT4, 16 MULT18X18D, 2 DP16KD). nextpnr fmax 53.22 MHz at 25 MHz target (lowest value in nextpnr log, `synth/pnr_soc.log`). Place-and-route estimate only, not measured on hardware.
+- `systolic_top` (LFE5U-45F, CABGA381): post-route fmax 52.85 MHz at 25 MHz target (`synth/run_synth.sh`, nextpnr-ecp5 0.10). Place-and-route estimate only, not measured on hardware. Wrapper only, not the full SoC.
+- `soc_fit` (full SoC: PicoRV32 + 4 KB RAM + accelerator, LFE5U-45F, CABGA381): post-route fmax 54.73 MHz at 25 MHz target (`synth/run_soc.sh`). Utilization: 4,583 LUT4 (10%), 1,868 FF (4%), 16 MULT18X18D (22%), 2 DP16KD (1%). Place-and-route estimate only, not measured on hardware.
 
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf`, `constraints/pin_map.csv`, and `constraints/soc_fit.lpf` are reference material; pin mapping is not verified against a board.
-- Full-SoC behavior test (`sim/tb_soc_fit.v`) covers the optimized firmware with seed 7 and the 3 extreme modes only, not the 100-seed range.
+- Wait-state test covers seeds 42 and 7 only; the 100-seed range has not been run.
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
 
