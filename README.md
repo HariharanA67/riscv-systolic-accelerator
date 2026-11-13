@@ -23,20 +23,26 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 #### PicoRV32 core and SoC
 - `rtl/soc_mini.v` + `rtl/accel_mmio.v`: PicoRV32 SoC with the accelerator at 0x8000_0000. `ENABLE_MUL` defaults to 1.
-- Firmware checked in simulation: `matmul_sw` (`tb_soc_sw`, 26,053 cycles) and `matmul_opt` (`tb_soc_opt_check`, 1,349 cycles), both on seed-7 data. The compiled-C `matmul.c` is not re-verified here.
+- Firmware checked in simulation: five firmware testbenches each pass a 400-run sweep (seeds 1-100 x modes 0-3): `tb_soc_c`, `tb_soc_opt`, `tb_soc_fit`, `tb_soc_swmul`, `tb_soc_sw`. See Performance.
 - Wait-state test (`sim/tb_wait_check.v`, stall wrapper in `sim/test_wrappers/`, not `rtl/`): 39 words checked against `expect_arith_add_0.txt`. Baseline 1,089 cycles; stalled 1,219 cycles with 377 stall cycles (random seed per run). Both pass. The stall wrapper is a test-only copy of `soc_mini` and is not part of the RTL.
 
 - ISA: 30 family programs via `run_families.sh` (871 checks, 0 wrong); full-ISA program `prog_isa.hex` (99 checks, 0 wrong).
 
 - Full SoC (`rtl/soc_fit.v`, synthesis top): wraps `soc_mini` with an XOR reduction of the accelerator output. Optimized-firmware matmul is checked on `soc_mini` by `sim/tb_soc_opt_check.v` (passes; an A-path mutant fails).
 
-### Performance (simulation, seed-7 data, whole-program cycles, PicoRV32)
-| Path | Cycles |
-|---|---|
-| Accelerator, optimized C (`tb_soc_opt_check`) | 1,349 |
-| Software, shift-and-add (`tb_soc_sw`) | 26,053 |
+### Performance (simulation only, whole-program cycles, PicoRV32)
+Each row is one testbench's `done_cycle`: the cycle the program first reaches its return point (`0x8`).
 
-Simulation only. The two rows are different programs, so this is not a controlled speedup comparison. Timing includes the CPU copying A, B, and C. No hardware-MUL baseline was run in this session.
+| Path | Testbench | Cycles (seed 7, mode 0) | Sweep range (400 runs) |
+|---|---|---|---|
+| Accelerator, compiled C | `tb_soc_c` | 1,512 | 1,512 (fixed) |
+| Accelerator, optimized C | `tb_soc_opt` (also `tb_soc_fit`) | 1,327 | 1,327 (fixed) |
+| Hardware-MUL software | `tb_soc_swmul` | 5,382 | 5,382 (fixed) |
+| Shift-and-add software | `tb_soc_sw` | 25,838 | 22,103-32,238 (data-dependent) |
+
+Sweep: seeds 1-100 x modes 0-3 (mode 0 seeded random, 1 all -128, 2 all 127, 3 A=-128 with B=127). Every run compares all 16 C words to a software reference. Results: 400/400 PASS for all five testbenches.
+
+Cycle ratios from these measurements (whole-program, includes CPU copying A, B, and C; the rows are different programs, so these are not controlled speedup comparisons): optimized accelerator vs. shift-and-add software 16.7x-24.3x; optimized accelerator vs. hardware-MUL software 4.1x; compiled-C accelerator vs. hardware-MUL software 3.6x. Simulation only.
 
 ### Synthesis and place-and-route (Yosys + nextpnr-ecp5, LFE5U-45F, 25 MHz target)
 - `systolic_top` (LFE5U-45F, CABGA381): post-route fmax 52.85 MHz at 25 MHz target (`synth/run_synth.sh`, nextpnr-ecp5 0.10). Place-and-route estimate only, not measured on hardware. Wrapper only, not the full SoC.
