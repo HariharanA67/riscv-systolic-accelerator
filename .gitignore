@@ -102,3 +102,4 @@ sim/build_sweep/
 sim/sweep_run.log
 sim/build_sweep_sw/
 sim/sweep_sw_run.log
+sim/build_wait/
