@@ -13,6 +13,7 @@ module tb_isa_family;
     reg [8*24-1:0] name;
     reg [8*64-1:0] hexfile, expfile, finalfile;
     reg ok;
+    integer expok;
 
     always @(posedge clk) begin
         if (!rst && dut.mem_valid && dut.mem_instr && !dut.mem_ready) begin
@@ -25,7 +26,7 @@ module tb_isa_family;
 
     initial begin
         if (!$value$plusargs("hex=%s", hexfile)) begin $display("ERROR: pass +hex= +exp= +fin="); $finish; end
-        if (!$value$plusargs("exp=%s", expfile)) begin $display("ERROR: pass +hex= +exp= +fin="); $finish; end
+        expok = $value$plusargs("exp=%s", expfile);
         if (!$value$plusargs("fin=%s", finalfile)) begin $display("ERROR: pass +hex= +exp= +fin="); $finish; end
         errors = 0; checks = 0; loop_hits = 0;
         fd = $fopen(finalfile, "r"); rc = $fscanf(fd, "%h", rfinal); $fclose(fd);
@@ -39,6 +40,10 @@ module tb_isa_family;
         end
         if (!ok) begin
             $display("FAMILY FAILED %0s: no final loop within %0d cycles", hexfile, MAX_CYCLES);
+            $finish;
+        end
+        if (!expok) begin
+            $display("FINISH ONLY %0s: reached final loop at cycle %0d (no register check)", hexfile, cycles);
             $finish;
         end
         fd = $fopen(expfile, "r");
