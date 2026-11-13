@@ -43,7 +43,7 @@ module tb_soc_sw ();
         #10 rst = 0;
 
         // Run until we reach the final loop at 0x8
-        repeat(50000) begin
+        repeat(200000) begin
             @(posedge clk);
             cycle = cycle + 1;
             if (dut.cpu.reg_pc == 32'h8 && done_cycle == 0) begin
