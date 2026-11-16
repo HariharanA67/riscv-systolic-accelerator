@@ -26,7 +26,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 - Firmware checked in simulation: five firmware testbenches each pass a 400-run sweep (seeds 1-100 x modes 0-3): `tb_soc_c`, `tb_soc_opt`, `tb_soc_fit`, `tb_soc_swmul`, `tb_soc_sw`. See Performance.
 - Wait-state test (`sim/tb_wait_check.v`, stall wrapper in `sim/test_wrappers/`, not `rtl/`): 39 words checked against `expect_arith_add_0.txt`. Baseline 1,089 cycles; stalled 1,219 cycles with 377 stall cycles (random seed per run). Both pass. The stall wrapper is a test-only copy of `soc_mini` and is not part of the RTL.
 
-- ISA: 30 family programs via `run_families.sh` (871 checks, 0 wrong). The 13 ISA chunk files (`final_addr_isa*.txt`, from `sim/gen_isa_split.py`) are excluded by that script and their results are not claimed here. Full-ISA program `prog_isa.hex`: 99 checks, 0 wrong.
+- ISA, three separate sets, all in simulation: (1) 30 family programs via `run_families.sh` (871 checks, 0 wrong); (2) 13 ISA chunks (`prog_isa0-12.hex`, each with its own expect and final-address files; 1,045 checks, 0 wrong, all chunks ok); (3) full-ISA program `prog_isa.hex` (99 checks, 0 wrong). The sets are not summed.
 
 - Full SoC (`rtl/soc_fit.v`, synthesis top): wraps `soc_mini` with an XOR reduction of the accelerator output. Optimized-firmware matmul is checked on `soc_mini` by `sim/tb_soc_opt_check.v` (passes; an A-path mutant fails).
 
