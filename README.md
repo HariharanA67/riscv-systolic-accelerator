@@ -28,7 +28,7 @@ A serial-I/O wrapper is also provided for a small FPGA pin count.
 
 - ISA, three separate sets, all in simulation: (1) 30 family programs via `run_families.sh` (871 checks, 0 wrong); (2) 13 ISA chunks (`prog_isa0-12.hex`, each with its own expect and final-address files; 1,045 checks, 0 wrong, all chunks ok); (3) full-ISA program `prog_isa.hex` (99 checks, 0 wrong). The sets are not summed.
 
-- Full SoC (`rtl/soc_fit.v`, synthesis top): wraps `soc_mini` with an XOR reduction of the accelerator output. Optimized-firmware matmul is checked on `soc_mini` by `sim/tb_soc_opt_check.v` (passes; an A-path mutant fails).
+- Full SoC (`rtl/soc_fit.v`, the synthesis top): `sim/tb_soc_fit.v` (optimized firmware, 1,327 cycles) and `sim/tb_soc_fit_c.v` (compiled-C firmware, 1,512 cycles) each run 100 seeds plus 3 extreme-value modes and check all 16 C values; all PASSED. The shift-and-add firmware has not been run through `soc_fit`.
 
 ### Performance (simulation only, whole-program cycles, PicoRV32)
 Each row is one testbench's `done_cycle`: the cycle the program first reaches its return point (`0x8`).
@@ -50,6 +50,7 @@ Cycle ratios from these measurements (whole-program, includes CPU copying A, B, 
 
 ## Not done
 - No hardware run. `constraints/ulx3s_systolic.lpf`, `constraints/pin_map.csv`, and `constraints/soc_fit.lpf` are reference material; pin mapping is not verified against a board.
+- Full-SoC behavior: the shift-and-add firmware has not been run through `soc_fit`; the other three firmwares have.
 - Wait-state test covers seeds 42 and 7 only; the 100-seed range has not been run.
 - The array is 4x4 only; it is not parameterized.
 - The wrapper does not detect host data errors or short/long reads (by design; see spec).
