@@ -1,10 +1,8 @@
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
-# Values from simulation runs in this repo (seed 7 unless noted).
-# Fixed-count firmwares: same count across all 100 seeds and extreme modes.
-# Shift-and-add: range across 100 seeds (mode 0) plus extreme modes 1-3.
 labels = ["Accelerator\ncompiled C", "Accelerator\noptimized C",
           "Software\nhardware MUL", "Software\nshift-and-add"]
 cycles = [1512, 1327, 5382, 25838]
@@ -16,10 +14,13 @@ bars = ax.bar(labels, cycles, color=colors)
 ax.errorbar(3, 25838, yerr=[[25838 - sw_lo], [sw_hi - 25838]],
             fmt="none", ecolor="black", capsize=6)
 
-for b, c in zip(bars, cycles):
-    ax.text(b.get_x() + b.get_width() / 2, c + 600, f"{c:,}",
+for i, (b, c) in enumerate(zip(bars, cycles)):
+    # Put the shift-and-add label above the error bar's top cap
+    y = sw_hi + 1200 if i == 3 else c + 600
+    ax.text(b.get_x() + b.get_width() / 2, y, f"{c:,}",
             ha="center", va="bottom", fontsize=10)
 
+ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{int(v):,}"))
 ax.set_ylabel("Whole-program cycles (PicoRV32, simulation)")
 ax.set_title("4x4 INT8 matmul on PicoRV32: cycles per run\n"
              "seed 7 (error bar: shift-and-add range over 100 seeds + extreme modes)",
